@@ -1,4 +1,504 @@
 <script type="text/javascript">
+// Out of Stock / Sold Out Ribbon
+    $('<style type="text/css">\
+        /* Out Of Stock Ribbon CSS */\
+        .sold-out-overlay {\
+            position: absolute;\
+            top: 8%;\
+            left: -33.5%;\
+            background-color: rgba(165, 165, 165, 0.5);\
+            width: 100%;\
+            text-align: center;\
+            font-size: 14px;\
+            line-height: 40px;\
+            color: black;\
+            /*border: solid 1px #000;*/\
+            -webkit-transform:rotate(-45deg);\
+            -o-transform:rotate(-45deg);\
+            transform: rotate(-45deg);\
+            text-transform: uppercase;\
+            text-shadow: 0px 0.5px 1px #fff;\
+        }\
+        </style>')
+        .appendTo('head');
+    
+    function applySoldOutRibbons() {
+        var soldOutOverlay = ('<span class="sold-out-overlay">Out of Stock</span>');
+        $(".ProductList li .ProductActionAdd a:contains('Sold out')").each(function( index ) {
+            $(this).parents('li').addClass('SoldOut'); 
+            $(this).parents('li').find('.ProductImage a').append(soldOutOverlay);
+            $(this).parent().parent().find('.on-sale-badge').hide();
+        });
+    };
+</script>
+<script type="text/javascript">
+//Category Page Demo Videos 
+        $('<style type="text/css">\
+        /* Category Product List Video */\
+        .CategoryContent .ProductList li {\
+            width: 310px;\
+            clip: rect(auto, auto, auto, 14px);\
+            overflow: visible;\
+        }\
+        .SearchContainer .ProductList li {\
+            overflow: visible;\
+            width: 310px;\
+        //    width: auto;\
+        }\
+        //#SearchProduct_Container .videoDemoBtn,\
+        //.CategoryContent .videoDemoBtn {\
+        //    top:0;\
+        //    right:-13px;\
+        //    display: block;\
+        //}\
+        .categoryDemoVideo {\
+            position: absolute;\
+            top: 0;\
+            left: 0;\
+            height: 100%;\
+        }\
+        .categoryDemoVideo video {\
+            height: 100%;\
+            width: 100%;\
+        }\
+        .Rating.Rating0 {\
+            display: none !important;\
+        }\
+        .videoDemoBtn {\
+            width: 50px;\
+            height: 50px;\
+            border-radius: 60px;\
+            position: absolute;\
+            cursor: pointer;\
+            z-index: 90;\
+            display: block;\
+            clip: rect(auto, auto, auto, auto);\
+            background-color: #39B54A;\
+            top:0;\
+        //    right:-13px;\
+            right:0;\
+        }\
+        .videoDemoBtn.videoPlaying {\
+            background-color: #e53b2c;\
+        }\
+        .videoDemoBtn .triangle {\
+            width: 0px;\
+            height: 0px;\
+            left: 20px;\
+            top: 8px;\
+            position: absolute;\
+            border-top: 6px solid transparent;\
+            border-bottom: 7px solid transparent;\
+            border-left: 12px solid #fff;\
+            z-index: 1;\
+            border-radius: 2px;\
+            color: #fff;\
+        }\
+        .videoDemoBtn .triangle:after {\
+            content: "Show Video";\
+            position: absolute;\
+            text-transform: uppercase;\
+            left: -19px;\
+            top: 9px;\
+            font-size: 8px;\
+        }\
+        .videoDemoBtn.videoPlaying .triangle {\
+            border: 6px solid #fff;\
+            left: 19px;\
+            top: 8px; \
+        }\
+        .videoDemoBtn.videoPlaying .triangle:after {\
+            content: "Hide Video";\
+            left: -12px;\
+        }\
+        </style>')
+            .appendTo('head');
+            
+    function showProductListDemoVideos() {
+        /* Play-Stop trigger button functionality */
+        $('.ProductList').on('click', '.videoDemoBtn', function() {
+            if ($(this).hasClass('videoPlaying')) {
+                $(this).removeClass('videoPlaying');
+                $(this).parent().find('.categoryDemoVideo').remove();
+            } else {
+                //var productNumber = $(this).parent().find('.ProductImage').attr('data-product');
+                var    productNumber = $(this).parent().find('.ProductCompareButton .CheckBox').attr('value');
+                var videoTagCode = '<div class="categoryDemoVideo">' +
+                    '<video id="demoVideo" class="video" preload autoplay loop autobuffer muted controls width="100%" height="100%" poster="/content/videos/' + productNumber + '.jpg">' +
+                    '<source src="/content/videos/' + productNumber + '.mp4">' +
+                    '<source src="/content/videos/' + productNumber + '.ogv" type="video/ogg">' +
+                    '<p>Your browser does not support this video.  Please upgrade your browser!</p>' +
+                    '</video>' +
+                    '</div>';
+                $(this).addClass('videoPlaying');
+                $(this).parent().find('.ProductImage').append(videoTagCode);
+            }
+        });
+        /* Visit each product page and check for video options tag, and if tag exists, add a Play/Stop tirgger button */
+        //$(".Options").each(function checkForVideo(url) {
+        $(".ProductActionAdd a:contains('Options')").each(function checkForVideo(url) {
+            var ProductCatOpt = $(this);
+            //var productNumber = $(this).parent().parent().find('.ProductImage').attr('data-product');
+            var    productNumber = $(this).parent().parent().find('.ProductCompareButton .CheckBox').attr('value');
+    
+            function ajax1() {
+                return $.ajax({
+                    url: '/content/videos/' + productNumber + '.mp4',
+                    type: 'HEAD',
+                }).done(function() {
+                    ProductCatOpt.addClass('withVideo');
+                }).fail(function() {
+                    return;
+                });
+            }
+            $.when(ajax1()).done(function(a1) {
+                ProductCatOpt.closest('li').append('<span class="videoDemoBtn"><div class="triangle"></div></span>');
+            });
+        });
+    };
+</script>        
+<script language="javascript" type="text/javascript">
+//Category Page Color Swatches and Size Options
+    $('<style type="text/css">\
+            /* Color and Size Options on Category Pages */\
+            /*.catSizeSwatch {\
+                display: none;\
+            }*/\
+            .catColorSwatch {\
+                display: inline-block;\
+            }\
+            .catColorSwatch li {\
+                padding: 0 4px;\
+            }\
+            .catColorSwatch .swatchOneColour .validation,\
+            .catColorSwatch .swatchOneColour .name,\
+            .catColorSwatch .swatchTexture .name,\
+            .catSizeSwatch .validation/*,\
+            .catSizeSwatch .name*/ {\
+                display: none;\
+            }\
+            .catColorSwatch li .validation {\
+                display: none;\
+            }\
+            .catColorSwatch .swatchColour {\
+                display: inline-block;\
+                width: 17px !important;\
+                height: 17px !important;\
+                border: 1px solid #fff;\
+            }\
+            .catColorSwatch li,\
+            .catColorSwatch li.swatch.swatchTexture,\
+            .catColorSwatch li.swatch.swatchOneColour {\
+                display: inline-block;\
+                float: left;\
+                width: auto !important;\
+                padding: 0;\
+                border: 2px solid #d5d5d5;\
+                margin: 5px 4px 1px 1px;\
+            }\
+            .catColorSwatch li.swatch.swatchOneColour.selectedColorBox {\
+                padding: 0;\
+            }\
+            .catColorSwatch li label {\
+                margin: 0;\
+                line-height: normal;\
+            }\
+            .catColorSwatch li.swatch.swatchOneColour label span.swatchColours.swatchOneColour {\
+                line-height: inherit;\
+            }\
+            .catColorSwatch .name {\
+                line-height: 19px;\
+                padding: 0 4px;\
+            }\
+            .catSizeSwatch {\
+                background-size: auto 100%;\
+                position: absolute;\
+                top: 200px;\
+                right: 0px;\
+                padding: 3px 0;\
+                width: 45px;\
+            }\
+            #SearchProduct_Container .catSizeSwatch {\
+                top: 120px;\
+            }\
+            .catSizeSwatch .list-horizontal {\
+                margin: 0;\
+            }\
+            .catSizeSwatch .list-horizontal .option {\
+                display: inline-block;\
+                width: 37px !important;\
+                padding: 0;\
+                background: none;\
+                margin: 0;\
+            }\
+            .catSizeSwatch .list-horizontal .option label {\
+                margin: 0;\
+            }\
+            .catSizeSwatch .list-horizontal .option label .name {\
+                font-weight: bold;\
+                color: black;\
+                display: block;\
+                font-size: 8px;\
+                line-height: 8px;\
+                margin: 10px 0 2px;\
+            }\
+            .sizeOptionsOverlay {\
+                /* background: url("%%ASSET_images/JointSizesL.png%%") center center no-repeat; */\
+                background-size: auto 100%;\
+                position: absolute;\
+                top: 253px;\
+                right: 0px;\
+                padding: 3px 0;\
+                width: 45px;\
+            }\
+            .catSizeSwatch .jointTitle,\
+            .sizeOptionsOverlay .jointTitle {\
+                font-weight: bold;\
+                display: inline-block;\
+                line-height: 9px;\
+                font-size: 8px;\
+            }\
+            .sizeOptionsOverlay .jointSize {\
+                display: inline-block;\
+                text-align: center;\
+                color: #BBB;\
+                vertical-align: bottom;\
+            }\
+            .catSizeSwatch img,\
+            .sizeOptionsOverlay .jointSize img {\
+                width: 14px;\
+                display: block;\
+                margin: 0 auto;\
+            }\
+            .sizeOptionsOverlay .jointSize span {\
+                font-weight: bold;\
+                color: black;\
+                display: block;\
+                font-size: 8px;\
+            }\
+            .sizeOptionsOverlay .jointSize i {\
+                display: block;\
+            }\
+            .catSizeSwatch img.small,\
+            .sizeOptionsOverlay .jointSize.small img {\
+                width: 10px;\
+            }\
+            .catSizeSwatch img.big,\
+            .sizeOptionsOverlay .jointSize.big img {\
+                width: 18px;\
+            }\
+            .catColorSwatch .textureContainer {\
+                display: block;\
+                width: 20px;\
+            }\
+            .catColorSwatch .textureContainer .thumbnail,\
+            .catColorSwatch .productOptionPickListSwatch .thumbnail {\
+                display: block;\
+                background-size: 100%;\
+                border: 1px solid white;\
+                height: 17px;\
+            }\
+            .ProductList .ProductImage img.colorSwatchImage {\
+                width:auto;\
+            }\
+            @media screen and (device-aspect-ratio: 40/71) {\
+                .catSizeSwatch {\
+                    top: 170px;\
+                }\
+            }\
+            </style>')
+        .appendTo('head');
+    
+    jQuery.expr[':'].icontains = function(a, i, m) {
+      return jQuery(a).text().toUpperCase()
+          .indexOf(m[3].toUpperCase()) >= 0;
+    };   
+    
+    /* try to combine this with category videos! */
+    function loadColorAndSizeSwatches() {
+        // Swatches - Color and Size options swatches 
+        //$(".Options").each(function checkForOptionSwatches(url) {
+        //$(".TrackLink:contains('Options')").each(function checkForOptionSwatches(url) {
+        $(".ProductActionAdd a:contains('Options')").each(function checkForOptionSwatches(url) {
+            var productListing = $(this).closest('em.p-price').html();
+            var productLink = $(this).parent().parent().find('div.ProductImage a').attr('href');
+            var $this = $(this);
+
+            function getOptionSwatches() {
+                return $.ajax({
+                    url: productLink,
+                    type: 'GET',
+                    dataType: 'html',
+                    //async: false
+                });
+            }
+            getOptionSwatches()
+                .done(function(data) {
+
+                    result = data;
+                    var productPage = result;
+                    var $productPageProcessing = $(productPage).find('.productAttributeList');
+                    var jointSizeAndGender = $(productPage).find('.JointSizeHeightContainer .Label:icontains("Joint Type:")').parent().find('.Value').text();
+                    var maleOrFemale = $.trim(jointSizeAndGender).split(' ')[1];
+                    var colorSwatch = $productPageProcessing.find("span:icontains('Color')").parents().eq(2).find('.productAttributeValue div').html();
+                    var sizeSwatch = $productPageProcessing.find("span:icontains('Size')").parents().eq(2).find('.productAttributeValue div').html();
+                    var sizeOptionsOverlay = '<div class="catSizeSwatch optionSwatch"><span class="jointTitle">Fits these joint sizes:</span>' + sizeSwatch + '</div>';
+                    if (colorSwatch != null) {
+                        $this.parent().parent().find('.ProductDetails').before('<div class="catColorSwatch optionSwatch">' + colorSwatch + '</div>');
+                        $this.addClass('withColorSwatch');
+                        // Color swatch clickability Starts here
+                        $(".withColorSwatch").each(function() {
+                            var productDiv = $(this).parent().parent();
+                            var productColorSwatch = productDiv.find('.catColorSwatch');
+                            productColorSwatch.find('li.swatch').attr({style: 'width: auto !important;'});
+
+                            var productName = productDiv.find('.pname').text();
+                            var images = [];
+                            //var productNumber = productDiv.find('div.ProductImage').attr('data-product');
+                            var productNumber = productDiv.find('.ProductCompareButton .CheckBox').attr('value');
+
+                            // We can pull the color values from the DOM! :)
+                            var colors = [];
+                            productColorSwatch.find("input.validation").each(function() {
+                                colors.push({
+                                    value: $(this).val(),
+                                    name: $(this).parent().find("span.swatchColours").attr("title"),
+                                    url: ''
+                                });
+                            });
+
+                            var queue = Array.prototype.concat.call(colors); // Make a copy of the array
+                            function poll(cb) {
+                                // Is queue finished ?
+                                if (!queue.length) {
+                                    cb();
+                                    return;
+                                }
+
+                                // Next color in queue
+                                var color = queue.pop();
+                                var attributeValue = productColorSwatch.find('.validation').attr('name').replace(/\D/g, '');
+                                var args = {
+                                    action: "add",
+                                    w: "getProductAttributeDetails",
+                                    product_id: productNumber,
+                                    attribute: []
+                                };
+                                args.attribute[attributeValue] = color.value;
+
+                                $.post("/remote.php", args, function(response) {
+                                    if (response && response.details && response.details.image) {
+                                        result[color.name] = response.details.image;
+                                        color.url = response.details.image;
+                                    }
+                                    poll(cb); // Next in queue
+                                });
+
+                                var productImage = productDiv.find('.ProductImage a img');
+                                productImage.addClass('colorSwatchImage');
+                                var colorSwatchBox = productColorSwatch.find('.validation[value=' + color.value + ']').parent().parent();
+                                var activeImage = productImage.attr('src');
+                                productImage.attr('data-original', activeImage);
+                                var originalImage = productImage.attr('data-original');
+                                colorSwatchBox.on({
+                                    mouseenter: function(event) {
+                                        originalImage = $(this).parents().eq(2).find('.ProductImage a img').attr('data-original');
+                                        $(this).parents().eq(2).find('.ProductImage a img').attr('src', color.url);
+                                        if (!$(this).hasClass('selectedColorBox')) {
+                                            $(this).css({
+                                                'border': '2px solid #666',
+                                                //'margin': '4px 3px 0 0'
+                                            });
+                                        }
+                                    },
+                                    mouseleave: function(event) {
+                                        if (!$(this).hasClass('selectedColorBox')) {
+                                            $(this).css({
+                                                'border': '2px solid #d5d5d5',
+                                                //'margin': '5px 4px 1px 1px'
+                                            });
+                                            //productImage.attr('src', activeImage);
+                                            $(this).parents().eq(2).find('.ProductImage a img').attr('src', originalImage);
+                                        }
+                                    },
+                                    click: function(event) {
+                                        $(this).parent().find('li').removeClass('selectedColorBox');
+                                        $(this).addClass('selectedColorBox');
+                                        $(this).parents().eq(2).find('.ProductImage a img').attr('src', color.url);
+                                        $(this).parents().eq(2).find('.ProductImage a img').attr('data-original', color.url);
+                                        $(this).parent().find('li').css({
+                                            'border': '2px solid #d5d5d5',
+                                            //'margin': '5px 4px 1px 1px'
+                                        });
+                                        $(this).css({
+                                            'border': '2px solid #39b54a',
+                                            //'margin': '4px 3px 0 0'
+                                        });
+                                        //activeImage = $(this).parents().eq(2).find('.ProductImage a img').attr('src');
+                                    }
+                                });
+                            }
+
+                            poll(function() {
+                                console.log('Why do I need this?');
+                            });
+
+                        });
+                        // Color swatch clickability ends here
+                    };
+                    if (sizeSwatch != null) {
+                        var thisProductListing = $this.parent().parent();
+                        if (maleOrFemale == 'Female') {
+                            thisProductListing.find('.ProductDetails').before(sizeOptionsOverlay);
+                            thisProductListing.find('.name:icontains("10mm")').text('Male 10mm').after('<img class="small" src="%%ASSET_images/malejoint.png%%" />');
+                            thisProductListing.find('.name:icontains("14mm")').text('Male 14mm').after('<img src="%%ASSET_images/malejoint.png%%" />');
+                            thisProductListing.find('.name:icontains("18mm")').text('Male 18mm').after('<img class="big" src="%%ASSET_images/malejoint.png%%" />');
+                        };
+                        if (maleOrFemale == 'Male') {
+                            thisProductListing.find('.ProductDetails').before(sizeOptionsOverlay);
+                            thisProductListing.find('.name:icontains("10mm")').text('Female 10mm').after('<img class="small" src="%%ASSET_images/femalejoint.png%%" />');
+                            thisProductListing.find('.name:icontains("14mm")').text('Female 14mm').after('<img src="%%ASSET_images/femalejoint.png%%" />');
+                            thisProductListing.find('.name:icontains("18mm")').text('Female 18mm').after('<img class="big" src="%%ASSET_images/femalejoint.png%%" />');
+                        };
+                    };
+                }).fail(function() {
+                    return;
+                });
+        });
+    };
+</script>
+<script type="text/javascript">
+/*Sale badge*/
+function updateOnSaleBadge() {
+    var imagelink = $('.ProductList .SalePrice').parents('li').find('.ProductImage a');
+    var badge_diameter = imagelink.width() * .42;
+    var badge_radius = badge_diameter/2;
+    var font_size = badge_radius/2.5;
+    
+    // get badge
+    var onsalebadge = $('.on-sale-badge');
+    var created_badge = false;
+    if(onsalebadge.length == 0) {
+        created_badge = true;
+        onsalebadge = $('<span class="on-sale-badge">On Sale</span>');
+    }
+    // adjust onsale badge dimensions
+    onsalebadge.each(function(){
+        $(this).width(badge_diameter).height(badge_diameter).css({
+            'line-height' : badge_diameter+'px',
+            'font-size' : font_size + 'px'
+        });
+    });
+    
+    // add badge to page
+    if(created_badge)
+    {
+        imagelink.append(onsalebadge);
+        onsalebadge.fadeIn();
+    }
+};
+</script>
+<script type="text/javascript">
 //<![CDATA[    
     $(document).ready(function() {
         $('.ToggleSearchFormLink').css('visibility', 'visible');
