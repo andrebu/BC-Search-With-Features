@@ -649,6 +649,19 @@ function updateOnSaleBadge() {
         //$container.imagesLoaded( function(){
         //  $container.masonry({itemSelector: 'li', transitionDuration: '0.75s'});
         //});
+
+        var pageInitialized = false;
+        $(function()
+        {
+            if(pageInitialized) return;
+            console.log("This is running nowwwww =======", pageInitialized);
+            pageInitialized = true;
+            // Put your init logic here.
+            applySoldOutRibbons();
+            showProductListDemoVideos();
+            loadColorAndSizeSwatches();
+            updateOnSaleBadge();
+        });
     }
 
     $(document).ready(function() {
